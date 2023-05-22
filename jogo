@@ -14,6 +14,7 @@ func main() {
 
 func playGame() {
 	rand.Seed(time.Now().UnixNano())
+
 	var todasTentativas [][]int
 	for {
 		resposta := rand.Intn(100) + 1
@@ -21,7 +22,7 @@ func playGame() {
 		var tentativas []int
 		for {
 			var adivinhar int
-			_, erro := fmt.Scanf("%d", adivinhar)
+			_, erro := fmt.Scanf("%d", &adivinhar)
 			if erro != nil {
 				fmt.Println("Erro, digite um número inteiro")
 				continue
@@ -33,29 +34,42 @@ func playGame() {
 				fmt.Println("o número é menor que ", adivinhar)
 			} else {
 				fmt.Println("Parabéns, você acertou!")
+				break
 			}
 		}
 		todasTentativas = append(todasTentativas, tentativas)
 		fmt.Printf("Você utilizou %d tentativas.\n", len(tentativas))
 		fmt.Println()
 		playAgain := askPlayAgain()
-		if !playAgain {
+		if playAgain {
+			fmt.Println()
+		} else {
+			displayStatistics(todasTentativas)
+			fmt.Println("Obrigado por jogar!")
 			break
 		}
 	}
-	displayStatistics(todasTentativas)
 }
 
 func askPlayAgain() bool {
-	fmt.Print("Você deseja jogar novamente? (s/n): ")
-
 	var playAgain string
-	_, err := fmt.Scanf("%s", &playAgain)
-	if err != nil {
-		return false
+	for {
+		fmt.Print("Deseja jogar novamente? (s/n): ")
+		_, err := fmt.Scanf("%s", &playAgain)
+		if err != nil {
+			fmt.Println("Erro, digite 's' para jogar novamente ou 'n' para sair.")
+			fmt.Println()
+			continue
+		}
+		if playAgain == "s" || playAgain == "S" {
+			return true
+		} else if playAgain == "n" || playAgain == "N" {
+			return false
+		} else {
+			fmt.Println("Entrada inválida. Digite 's' para jogar novamente ou 'n' para sair.")
+			fmt.Println()
+		}
 	}
-
-	return playAgain == "s" || playAgain == "S"
 }
 
 func displayStatistics(allAttempts [][]int) {
