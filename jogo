@@ -1,0 +1,85 @@
+package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func main() {
+	fmt.Println("Bem-vindo ao jogo da adivinhação!")
+	fmt.Println()
+	playGame()
+}
+
+func playGame() {
+	rand.Seed(time.Now().UnixNano())
+	var todasTentativas [][]int
+	for {
+		resposta := rand.Intn(100) + 1
+		fmt.Println("Digite um número entre 1 a 100: ")
+		var tentativas []int
+		for {
+			var adivinhar int
+			_, erro := fmt.Scanf("%d", adivinhar)
+			if erro != nil {
+				fmt.Println("Erro, digite um número inteiro")
+				continue
+			}
+			tentativas = append(tentativas, adivinhar)
+			if adivinhar < resposta {
+				fmt.Println("O número é maior que ", adivinhar)
+			} else if adivinhar > resposta {
+				fmt.Println("o número é menor que ", adivinhar)
+			} else {
+				fmt.Println("Parabéns, você acertou!")
+			}
+		}
+		todasTentativas = append(todasTentativas, tentativas)
+		fmt.Printf("Você utilizou %d tentativas.\n", len(tentativas))
+		fmt.Println()
+		playAgain := askPlayAgain()
+		if !playAgain {
+			break
+		}
+	}
+	displayStatistics(todasTentativas)
+}
+
+func askPlayAgain() bool {
+	fmt.Print("Você deseja jogar novamente? (s/n): ")
+
+	var playAgain string
+	_, err := fmt.Scanf("%s", &playAgain)
+	if err != nil {
+		return false
+	}
+
+	return playAgain == "s" || playAgain == "S"
+}
+
+func displayStatistics(allAttempts [][]int) {
+	fmt.Println("Estatísticas das jogadas:")
+
+	for i, attempts := range allAttempts {
+		fmt.Printf("Você utilizou %d tentativas na %s jogada.\n", len(attempts), ordinalSuffix(i+1))
+	}
+}
+
+func ordinalSuffix(n int) string {
+	switch n % 10 {
+	case 1:
+		if n%100 != 11 {
+			return fmt.Sprintf("%dst", n)
+		}
+	case 2:
+		if n%100 != 12 {
+			return fmt.Sprintf("%dnd", n)
+		}
+	case 3:
+		if n%100 != 13 {
+			return fmt.Sprintf("%drd", n)
+		}
+	}
+	return fmt.Sprintf("%dth", n)
+}
