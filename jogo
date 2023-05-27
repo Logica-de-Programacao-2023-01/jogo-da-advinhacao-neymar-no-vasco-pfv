@@ -1,0 +1,99 @@
+package main
+
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func main() {
+	fmt.Println("Bem-vindo ao jogo da adivinhação!")
+	fmt.Println()
+	playGame()
+}
+
+func playGame() {
+	rand.Seed(time.Now().UnixNano())
+
+	var todasTentativas [][]int
+	for {
+		resposta := rand.Intn(100) + 1
+		fmt.Print("Digite um número entre 1 a 100: ")
+		var tentativas []int
+		for {
+			var adivinhar int
+			_, erro := fmt.Scanf("%d", &adivinhar)
+			if erro != nil {
+				fmt.Print("\nDigite um número entre 1 a 100: ")
+				continue
+			}
+			tentativas = append(tentativas, adivinhar)
+			if adivinhar < resposta {
+				fmt.Print("O número é maior que ", adivinhar)
+			} else if adivinhar > resposta {
+				fmt.Print("o número é menor que ", adivinhar)
+			} else {
+				fmt.Print("Parabéns, você acertou!")
+				break
+			}
+		}
+		todasTentativas = append(todasTentativas, tentativas)
+		fmt.Printf("Você utilizou %d tentativas.\n", len(tentativas))
+		fmt.Println()
+		playAgain := askPlayAgain()
+		if playAgain {
+			fmt.Println()
+		} else {
+			displayStatistics(todasTentativas)
+			fmt.Println("Obrigado por jogar!")
+			break
+		}
+	}
+}
+
+func askPlayAgain() bool {
+	var playAgain string
+	for {
+		fmt.Print("Deseja jogar novamente? (s/n): ")
+		_, erro := fmt.Scanf("%s", &playAgain)
+		if erro != nil {
+			fmt.Print("")
+			fmt.Println()
+			continue
+		}
+		if playAgain == "s" || playAgain == "S" {
+			return true
+		} else if playAgain == "n" || playAgain == "N" {
+			return false
+		} else {
+			fmt.Print("Entrada inválida. Digite 's' para jogar novamente ou 'n' para sair.")
+			fmt.Println()
+		}
+	}
+}
+
+func displayStatistics(allAttempts [][]int) {
+	fmt.Println("Estatísticas das jogadas:")
+
+	for i, attempts := range allAttempts {
+		fmt.Printf("Você utilizou %d tentativas na %s jogada.\n", len(attempts), ordinalSuffix(i+1))
+	}
+}
+
+func ordinalSuffix(n int) string {
+	switch n % 10 {
+	case 1:
+		if n%100 != 11 {
+			return fmt.Sprintf("%dst", n)
+		}
+	case 2:
+		if n%100 != 12 {
+			return fmt.Sprintf("%dnd", n)
+		}
+	case 3:
+		if n%100 != 13 {
+			return fmt.Sprintf("%drd", n)
+		}
+	}
+	return fmt.Sprintf("%dth", n)
+}
